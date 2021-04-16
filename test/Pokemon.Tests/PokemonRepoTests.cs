@@ -27,13 +27,12 @@ namespace PokemonService.Tests
                     StatusCode = isValid ? System.Net.HttpStatusCode.OK : System.Net.HttpStatusCode.NotFound,
                     Content = new StringContent(
                         JsonConvert.SerializeObject(
-                            new Pokemon()
-                            {
-                                Name = input.Replace($"{UrlConstants.PokemonApiBaseUrl}pokemon/", ""),
-                                IsLegendary = isLegendary,
-                                Habitat = new PokemonHabitat { Name = habitat },
-                                Description = habitat == "cave" || isLegendary ? "yoda" : "shakespeare"
-                            })
+                            new Pokemon(input.Replace($"{UrlConstants.PokemonApiBaseUrl}pokemon/", ""),
+                                habitat == "cave" || isLegendary ? "yoda" : "shakespeare",
+                                habitat,
+                                isLegendary
+                                )
+                            )
                         )
                 }
                 );

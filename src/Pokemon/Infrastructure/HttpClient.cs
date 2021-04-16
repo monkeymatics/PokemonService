@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -12,12 +14,54 @@ namespace PokemonCore.Infrastructure
 
         public async Task<HttpResponseMessage> GetAsync(string url)
         {
-            throw new NotImplementedException();
+            return await MakeRequest("GET", url);
+        }
+
+        public async Task<ReturnType<T>> GetAsync<T>(string url)
+        {
+            var response = await GetAsync(url);
+
+            return new ReturnType<T>(JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync()), response);
         }
 
         public async Task<HttpResponseMessage> PostAsync(string url, HttpContent requestContent)
         {
-            throw new NotImplementedException();
+            return await MakeRequest("POST", url, requestContent);
+        }
+
+        public async Task<ReturnType<T>> PostAsync<T>(string url, HttpContent requestContent)
+        {
+            var response = await PostAsync(url, requestContent);
+
+            return new ReturnType<T>(JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync()), response);
+        }
+
+        private async Task<HttpResponseMessage> MakeRequest(string method, string url, HttpContent content = null)
+        {
+            if(method == "GET")
+            {
+                return await _client.GetAsync(url);
+            }
+            else if(method == "POST")
+            {
+                return await _client.PostAsync(url, content);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+    }
+
+    public class ReturnType<T>
+    {
+        public T ReturnObject { get; set; }
+        public HttpResponseMessage ResponseMessage { get; set; }
+
+        public ReturnType(T returnObject, HttpResponseMessage message)
+        {
+            ReturnObject = returnObject;
+            ResponseMessage = message;
         }
     }
 }

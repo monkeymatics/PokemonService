@@ -21,15 +21,15 @@ namespace PokemonService.Tests
 
             clientMock.Setup(mock => mock.PostAsync(It.Is<string>(x => x == UrlConstants.YodaTranslatorUrl), It.IsAny<HttpContent>()))
                 .ReturnsAsync(
-                new HttpResponseMessage 
-                { 
+                new HttpResponseMessage
+                {
                     Content = new StringContent
                     (
                         JsonConvert.SerializeObject
                         (
-                            new TranslationResponse 
-                            { 
-                                ResponseContent = new TranslationResponseContents { TranslatedText = yodaTranslation } 
+                            new TranslationResponse
+                            {
+                                ResponseContent = new TranslationResponseContents { TranslatedText = yodaTranslation }
                             }
                             )
                         )
@@ -58,13 +58,10 @@ namespace PokemonService.Tests
         public async void Cave_Habitat_And_Legendary_Returns_Yoda()
         {
             Setup();
-            var pokemon = new Pokemon()
-            {
-                Description = "Test",
-                Habitat = new PokemonHabitat() { Name = "cave" },
-                IsLegendary = true,
-                Name = "Test"
-            };
+            var pokemon = new Pokemon("Test",
+                "Test",
+                "cave",
+                true);
 
             var desc = await pokemon.GetDescription(clientMock.Object);
 
@@ -75,13 +72,7 @@ namespace PokemonService.Tests
         public async void Non_Cave_Habitat_And_Legendary_Returns_Yoda()
         {
             Setup();
-            var pokemon = new Pokemon()
-            {
-                Description = "Test",
-                Habitat = new PokemonHabitat() { Name = "forest" },
-                IsLegendary = true,
-                Name = "Test"
-            };
+            var pokemon = new Pokemon("Test", "Test", "forest", true);
 
             var desc = await pokemon.GetDescription(clientMock.Object);
 
@@ -92,13 +83,7 @@ namespace PokemonService.Tests
         public async void Cave_Habitat_And_Non_Legendary_Returns_Yoda()
         {
             Setup();
-            var pokemon = new Pokemon()
-            {
-                Description = "Test",
-                Habitat = new PokemonHabitat() { Name = "cave" },
-                IsLegendary = false,
-                Name = "Test"
-            };
+            var pokemon = new Pokemon("Test", "Test", "cave", false);
 
             var desc = await pokemon.GetDescription(clientMock.Object);
 
@@ -109,13 +94,7 @@ namespace PokemonService.Tests
         public async void Non_Cave_Habitat_And_Non_Legendary_Returns_Shakespeare()
         {
             Setup();
-            var pokemon = new Pokemon()
-            {
-                Description = "Test",
-                Habitat = new PokemonHabitat() { Name = "forest" },
-                IsLegendary = false,
-                Name = "Test"
-            };
+            var pokemon = new Pokemon("Test", "Test", "forest", false);
 
             var desc = await pokemon.GetDescription(clientMock.Object);
 

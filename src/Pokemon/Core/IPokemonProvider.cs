@@ -7,6 +7,6 @@ namespace PokemonCore.Core
 {
     public interface IPokemonProvider
     {
-        Task<Pokemon> GetPokemonByNameAsync(string pokemonName);
+        Task<Pokemon> GetPokemonByNameAsync(string pokemonName, string language = "en");
     }
 }

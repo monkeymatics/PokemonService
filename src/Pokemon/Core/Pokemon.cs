@@ -11,13 +11,21 @@ namespace PokemonCore.Core
     public class Pokemon
     {
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; private set; }
         [JsonProperty("description")]
-        public string Description { get; set; }
+        public string Description { get; private set; }
         [JsonProperty("habitat")]
-        public PokemonHabitat Habitat { get; set; }
+        public PokemonHabitat Habitat { get; private set; }
         [JsonProperty("is_legendary")]
-        public bool IsLegendary { get; set; }
+        public bool IsLegendary { get; private set; }
+
+        public Pokemon(string name, string description, string habitat, bool isLegendary)
+        {
+            Name = name;
+            Description = description;
+            Habitat = new PokemonHabitat { Name = habitat };
+            IsLegendary = isLegendary;
+        }
 
         public async Task<string> GetDescription(IHttpClient httpClient)
         {
