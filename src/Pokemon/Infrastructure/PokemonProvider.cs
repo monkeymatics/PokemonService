@@ -20,7 +20,7 @@ namespace PokemonCore.Infrastructure
         public async Task<Pokemon> GetPokemonByNameAsync(string pokemonName, string language = "en")
         {
             var url = $"{UrlConstants.PokemonApiBaseUrl}pokemon/{pokemonName}";
-            var response = await _client.GetAsync<PokemonResponse>(url);
+            var response = await _client.GetAsync<PokemonProviderResponse>(url);
 
             if (response.ResponseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                 throw new ArgumentException(nameof(pokemonName));
@@ -32,13 +32,13 @@ namespace PokemonCore.Infrastructure
 
             var pokemonSpeciesResponse = speciesResponse.ReturnObject;
 
-            var description = pokemonSpeciesResponse.Descriptions.FirstOrDefault(z => z.Language.Name == language);
+            var description = pokemonSpeciesResponse.Descriptions.FirstOrDefault(z => z.Language.Name == language);                
 
             return new Pokemon(pokemonResponse.Name, description.Description, pokemonSpeciesResponse.Habitat.HabitatName, pokemonSpeciesResponse.IsLegendary);
         }
     }
 
-    public class PokemonResponse
+    public class PokemonProviderResponse
     {
         [JsonProperty("id")]
         public int PokemonId { get; set; }
