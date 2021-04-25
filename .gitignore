@@ -338,3 +338,7 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/deploy/lambda
+/src/PokemonService.Api - Copy/Properties/launchSettings.json
+/src/PokemonService.Api - Copy/appsettings.json
+/src/PokemonService.Api - Copy/appsettings.Development.json

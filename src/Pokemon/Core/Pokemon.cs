@@ -1,10 +1,4 @@
 ﻿using Newtonsoft.Json;
-using PokemonCore.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonCore.Core
 {
@@ -22,12 +16,6 @@ namespace PokemonCore.Core
             Habitat = new PokemonHabitat { Name = habitat };
             IsLegendary = isLegendary;
         }
-    }
-
-    public class TranslationRequest
-    {
-        [JsonProperty("text")]
-        public string TextToTranslate { get; set; }
     }
 
     public class PokemonHabitat

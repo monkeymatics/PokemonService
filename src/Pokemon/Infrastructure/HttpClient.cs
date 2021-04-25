@@ -21,7 +21,10 @@ namespace PokemonCore.Infrastructure
         {
             var response = await GetAsync(url);
 
-            return new ReturnType<T>(JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync()), response);
+            if (response.StatusCode == HttpStatusCode.OK)
+                return new ReturnType<T>(JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync()), response);
+            else
+                return new ReturnType<T>(response);
         }
 
         public async Task<HttpResponseMessage> PostAsync(string url, HttpContent requestContent)
@@ -32,17 +35,19 @@ namespace PokemonCore.Infrastructure
         public async Task<ReturnType<T>> PostAsync<T>(string url, HttpContent requestContent)
         {
             var response = await PostAsync(url, requestContent);
-
-            return new ReturnType<T>(JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync()), response);
+            if (response.StatusCode == HttpStatusCode.OK)
+                return new ReturnType<T>(JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync()), response);
+            else
+                return new ReturnType<T>(response);
         }
 
         private async Task<HttpResponseMessage> MakeRequest(string method, string url, HttpContent content = null)
         {
-            if(method == "GET")
+            if (method == "GET")
             {
                 return await _client.GetAsync(url);
             }
-            else if(method == "POST")
+            else if (method == "POST")
             {
                 return await _client.PostAsync(url, content);
             }
@@ -58,6 +63,10 @@ namespace PokemonCore.Infrastructure
         public T ReturnObject { get; set; }
         public HttpResponseMessage ResponseMessage { get; set; }
 
+        public ReturnType(HttpResponseMessage message)
+        {
+            ResponseMessage = message;
+        }
         public ReturnType(T returnObject, HttpResponseMessage message)
         {
             ReturnObject = returnObject;

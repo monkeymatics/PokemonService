@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using Xunit;
-using Xunit.Sdk;
 
 namespace PokemonService.Tests
 {

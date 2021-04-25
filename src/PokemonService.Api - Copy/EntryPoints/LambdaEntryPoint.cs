@@ -1,6 +1,7 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.AspNetCore.Hosting;
+using System;
 using System.Collections.Generic;
 
 namespace PokemonService.Api.EntryPoints

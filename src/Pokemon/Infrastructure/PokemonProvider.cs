@@ -2,8 +2,8 @@
 using PokemonCore.Core;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace PokemonCore.Infrastructure
@@ -11,6 +11,8 @@ namespace PokemonCore.Infrastructure
     public class PokemonProvider : IPokemonProvider
     {
         private readonly IHttpClient _client;
+        private readonly List<string> _escapeCharacters = new List<string> { "\n", "\f" };
+
 
         public PokemonProvider(IHttpClient client)
         {
@@ -19,22 +21,36 @@ namespace PokemonCore.Infrastructure
 
         public async Task<Pokemon> GetPokemonByNameAsync(string pokemonName, string language = "en")
         {
-            var url = $"{UrlConstants.PokemonApiBaseUrl}pokemon/{pokemonName}";
-            var response = await _client.GetAsync<PokemonProviderResponse>(url);
+            try
+            {
+                var url = $"{UrlConstants.PokemonApiBaseUrl}pokemon/{pokemonName}";
+                var response = await _client.GetAsync<PokemonProviderResponse>(url);
 
-            if (response.ResponseMessage.StatusCode != System.Net.HttpStatusCode.OK)
-                throw new ArgumentException(nameof(pokemonName));
+                switch (response.ResponseMessage.StatusCode)
+                {
+                    case System.Net.HttpStatusCode.NotFound:
+                        throw new ArgumentException(nameof(pokemonName));
+                    case System.Net.HttpStatusCode.OK:
+                        var pokemonResponse = response.ReturnObject;
 
-            var pokemonResponse = response.ReturnObject;
+                        url = $"{UrlConstants.PokemonApiBaseUrl}pokemon-species/{pokemonName}";
+                        var speciesResponse = await _client.GetAsync<PokemonSpeciesResponse>(url);
 
-            url = $"{UrlConstants.PokemonApiBaseUrl}pokemon-species/{pokemonName}";
-            var speciesResponse = await _client.GetAsync<PokemonSpeciesResponse>(url);
+                        var pokemonSpeciesResponse = speciesResponse.ReturnObject;
 
-            var pokemonSpeciesResponse = speciesResponse.ReturnObject;
+                        var description = pokemonSpeciesResponse.Descriptions.FirstOrDefault(z => z.Language.Name == language);
 
-            var description = pokemonSpeciesResponse.Descriptions.FirstOrDefault(z => z.Language.Name == language);                
+                        _escapeCharacters.ForEach(z => description.Description = description.Description.Replace(z, " "));
 
-            return new Pokemon(pokemonResponse.Name, description.Description, pokemonSpeciesResponse.Habitat.HabitatName, pokemonSpeciesResponse.IsLegendary);
+                        return new Pokemon(pokemonResponse.Name, description.Description, pokemonSpeciesResponse.Habitat.HabitatName, pokemonSpeciesResponse.IsLegendary);
+                    default:
+                        throw new ApplicationException(response.ResponseMessage.ReasonPhrase);
+                }
+            }
+            catch (HttpRequestException)
+            {
+                throw new ApplicationException("An error occurred while retrieving pokemon details");
+            }
         }
     }
 

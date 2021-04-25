@@ -1,9 +1,7 @@
 ﻿using PokemonCore.Core;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace PokemonCore.Infrastructure
 {
@@ -17,13 +15,26 @@ namespace PokemonCore.Infrastructure
 
         public async Task<string> GetTranslation(string text, TranslationLanguage language)
         {
-            string url = language == TranslationLanguage.Yoda ? UrlConstants.YodaTranslatorUrl : UrlConstants.ShakespeareTranslatorUrl;
+            try
+            {
+                string url = language == TranslationLanguage.Yoda ? UrlConstants.YodaTranslatorUrl : UrlConstants.ShakespeareTranslatorUrl;
 
-            url += $"?text={HttpUtility.UrlEncode(text)}";
+                url += $"?text={text}";
 
-            var translation = await _httpClient.GetAsync<TranslationResponse>(url);
+                Console.WriteLine($"Translation url - {url}");
+                Console.WriteLine($"Httpclient null - {_httpClient == null}");
 
-            return translation.ReturnObject.Success.SuccessCount > 0 ? translation.ReturnObject.ResponseContent.TranslatedText : "Could not translate description";
+                var translation = await _httpClient.GetAsync<TranslationResponse>(url);
+
+                if (translation.ResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+                    return translation.ReturnObject.Success.SuccessCount > 0 ? translation.ReturnObject.ResponseContent.TranslatedText : "Could not translate description";
+                else
+                    throw new ApplicationException(translation.ResponseMessage.ReasonPhrase);
+            }
+            catch (HttpRequestException)
+            {
+                throw new ApplicationException("An error occurred during translation");
+            }
         }
     }
 }

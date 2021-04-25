@@ -3,10 +3,8 @@ using Newtonsoft.Json;
 using PokemonCore.App;
 using PokemonCore.Core;
 using PokemonCore.Infrastructure;
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using Xunit;
 
 namespace PokemonService.Tests
