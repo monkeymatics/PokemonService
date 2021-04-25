@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  An AWS Serverless Application that uses the ASP.NET Core framework running
+  in Amazon Lambda.
+
+Parameters:
+  ArtifactsS3Bucket:
+    Type: String
+    
+  ArtifactsS3Prefix:
+    Type: String
+    
+  RuntimeVersion:
+    Type: String
+    
+  BuildVersion:
+    Type: String
+
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambda_FullAccess
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+
+  ApiFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-ApiFunction
+      Handler: PokemonService.Api::PokemonService.Api.EntryPoints.LambdaEntryPoint::FunctionHandlerAsync
+      Runtime:
+        Fn::Sub: "dotnetcore${RuntimeVersion}"
+      MemorySize: 512
+      Timeout: 30
+      Role:
+        Fn::GetAtt: LambdaRole.Arn
+      Code:
+        S3Bucket:
+          Fn::Sub: "${ArtifactsS3Bucket}"
+        S3Key:
+          Fn::Sub: "${ArtifactsS3Prefix}/${BuildVersion}/PokemonService.Api.zip"
+
+Outputs:
+  ApiFunctionName:
+    Description: The function that handles all API requests for the Vas service
+    Value:
+      Ref: ApiFunction
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-ApiFunction"
+
+  ApiFunctionArn:
+    Description: The function that handles all API requests for the Vas service
+    Value:
+      Fn::GetAtt: ApiFunction.Arn
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-ApiFunctionArn"

@@ -1,0 +1,8 @@
+{
+	"StackNamePrefix": "Dev-",
+	"StackName": "PokemonService",
+	"ArtifactsS3Bucket": "artifacts-pokemon",
+	"ArtifactsS3Prefix": "dev/pokemon",
+	"RuntimeVersion": "2.1",
+	"ProfileName": "default"
+}
