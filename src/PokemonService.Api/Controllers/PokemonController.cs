@@ -19,7 +19,7 @@ namespace PokemonService.Api.Controllers
         [HttpGet("pokemon/{type}")]
         public async Task<IActionResult> GetBasicDetails([FromRoute] string type)
         {
-            return await ProcessRequest(type, true);
+            return await ProcessRequest(type, false);
         }
 
         [HttpGet("pokemon/translated/{type}")]

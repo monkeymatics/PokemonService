@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace PokemonCore.Core
 {
@@ -11,16 +12,15 @@ namespace PokemonCore.Core
 
         public Pokemon(string name, string description, string habitat, bool isLegendary)
         {
-            Name = name;
-            Description = description;
-            Habitat = new PokemonHabitat { Name = habitat };
+            Name = string.IsNullOrWhiteSpace(name) ? throw new ArgumentNullException(nameof(name)) : name;
+            Description = string.IsNullOrWhiteSpace(description) ? throw new ArgumentNullException(nameof(description)) : description;
+            Habitat = new PokemonHabitat { Name = string.IsNullOrWhiteSpace(habitat) ? throw new ArgumentNullException(nameof(habitat)) : habitat };
             IsLegendary = isLegendary;
         }
     }
 
     public class PokemonHabitat
     {
-        [JsonProperty("name")]
         public string Name { get; set; }
     }
 }

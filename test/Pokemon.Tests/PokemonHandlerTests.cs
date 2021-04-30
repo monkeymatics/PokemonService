@@ -15,7 +15,8 @@ namespace PokemonService.Tests
         private Mock<IHttpClient> _clientMock;
         private string shakespeareTranslation = "shakespeare";
         private string yodaTranslation = "yoda";
-        private void Setup(bool isValid, bool isLegendary = false, string habitat = "notcave")
+        private string originalTranslation = "original";
+        private void Setup(bool isValid, bool isLegendary = false, string habitat = "notcave", bool translate = false)
         {
             _clientMock = new Mock<IHttpClient>();
 
@@ -32,7 +33,7 @@ namespace PokemonService.Tests
                         StatusCode = isValid ? System.Net.HttpStatusCode.OK : System.Net.HttpStatusCode.NotFound,
                         Content = new StringContent(JsonConvert.SerializeObject(
                             new Pokemon(input.Replace($"{UrlConstants.PokemonApiBaseUrl}pokemon/", ""),
-                                habitat == "cave" || isLegendary ? "yoda" : "shakespeare",
+                                translate ? habitat == "cave" || isLegendary ? yodaTranslation : shakespeareTranslation : originalTranslation,
                                 habitat,
                                 isLegendary
                                 )
@@ -58,7 +59,7 @@ namespace PokemonService.Tests
                         {
                             new PokemonDescription
                             {
-                                Description = habitat == "cave" || isLegendary ? "yoda" : "shakespeare",
+                                Description = translate ? habitat == "cave" || isLegendary ? yodaTranslation : shakespeareTranslation : originalTranslation,
                                 Language = new PokemonDescriptionAttribute{ Name = "en" },
                                 Version = new PokemonDescriptionAttribute{ Name = "1" }
                             }
@@ -69,7 +70,7 @@ namespace PokemonService.Tests
                         StatusCode = isValid ? System.Net.HttpStatusCode.OK : System.Net.HttpStatusCode.NotFound,
                         Content = new StringContent(JsonConvert.SerializeObject(
                             new Pokemon(input.Replace($"{UrlConstants.PokemonApiBaseUrl}pokemon/", ""),
-                                habitat == "cave" || isLegendary ? "yoda" : "shakespeare",
+                                translate ? habitat == "cave" || isLegendary ? yodaTranslation : shakespeareTranslation : originalTranslation,
                                 habitat,
                                 isLegendary
                                 )
@@ -131,41 +132,75 @@ namespace PokemonService.Tests
         }
 
         [Fact]
-        public async void Cave_Habitat_And_Legendary_Returns_Yoda()
+        public async void Translated_Cave_Habitat_And_Legendary_Returns_Yoda()
         {
-            Setup(true, true, "cave");
+            Setup(true, true, "cave", true);
             var response = await _handler.HandleAsync(new GetPokemonQuery { PokemonName = "Test", TranslateDescription = true });
 
             Assert.Equal(yodaTranslation, response.Description);
         }
 
         [Fact]
-        public async void Non_Cave_Habitat_And_Legendary_Returns_Yoda()
+        public async void Translated_Non_Cave_Habitat_And_Legendary_Returns_Yoda()
         {
-            Setup(true, true, "noncave");
+            Setup(true, true, "noncave", true);
             var response = await _handler.HandleAsync(new GetPokemonQuery { PokemonName = "Test", TranslateDescription = true });
 
             Assert.Equal(yodaTranslation, response.Description);
         }
 
         [Fact]
-        public async void Cave_Habitat_And_Non_Legendary_Returns_Yoda()
+        public async void Translated_Cave_Habitat_And_Non_Legendary_Returns_Yoda()
         {
-            Setup(true, false, "cave");
+            Setup(true, false, "cave", true);
             var response = await _handler.HandleAsync(new GetPokemonQuery { PokemonName = "Test", TranslateDescription = true });
 
             Assert.Equal(yodaTranslation, response.Description);
         }
 
         [Fact]
-        public async void Non_Cave_Habitat_And_Non_Legendary_Returns_Shakespeare()
+        public async void Translated_Non_Cave_Habitat_And_Non_Legendary_Returns_Shakespeare()
         {
-            Setup(true, false, "noncave");
+            Setup(true, false, "noncave", true);
             var response = await _handler.HandleAsync(new GetPokemonQuery { PokemonName = "Test", TranslateDescription = true });
 
             Assert.Equal(shakespeareTranslation, response.Description);
         }
 
+        [Fact]
+        public async void Non_Translated_Cave_Habitat_And_Legendary_Returns_Yoda()
+        {
+            Setup(true, true, "cave", false);
+            var response = await _handler.HandleAsync(new GetPokemonQuery { PokemonName = "Test", TranslateDescription = false });
 
+            Assert.Equal(originalTranslation, response.Description);
+        }
+
+        [Fact]
+        public async void Non_Translated_Non_Cave_Habitat_And_Legendary_Returns_Yoda()
+        {
+            Setup(true, true, "noncave", false);
+            var response = await _handler.HandleAsync(new GetPokemonQuery { PokemonName = "Test", TranslateDescription = false });
+
+            Assert.Equal(originalTranslation, response.Description);
+        }
+
+        [Fact]
+        public async void Non_Translated_Cave_Habitat_And_Non_Legendary_Returns_Yoda()
+        {
+            Setup(true, false, "cave", false);
+            var response = await _handler.HandleAsync(new GetPokemonQuery { PokemonName = "Test", TranslateDescription = false });
+
+            Assert.Equal(originalTranslation, response.Description);
+        }
+
+        [Fact]
+        public async void Non_Translated_Non_Cave_Habitat_And_Non_Legendary_Returns_Shakespeare()
+        {
+            Setup(true, false, "noncave", false);
+            var response = await _handler.HandleAsync(new GetPokemonQuery { PokemonName = "Test", TranslateDescription = false });
+
+            Assert.Equal(originalTranslation, response.Description);
+        }
     }
 }
