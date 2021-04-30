@@ -1,11 +1,5 @@
-﻿using Moq;
-using Newtonsoft.Json;
-using PokemonCore.App;
-using PokemonCore.Core;
-using PokemonCore.Infrastructure;
+﻿using PokemonCore.Core;
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using Xunit;
 
 namespace PokemonService.Tests

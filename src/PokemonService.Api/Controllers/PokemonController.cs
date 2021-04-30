@@ -41,12 +41,12 @@ namespace PokemonService.Api.Controllers
                     )
                     ;
                 return Ok(
-                    new GetPokemonResponse 
-                    { 
-                        Description = pokemon.Description, 
-                        Habitat = pokemon.Habitat, 
-                        IsLegendary = pokemon.IsLegendary, 
-                        Name = pokemon.Name 
+                    new GetPokemonResponse
+                    {
+                        Description = pokemon.Description,
+                        Habitat = pokemon.Habitat,
+                        IsLegendary = pokemon.IsLegendary,
+                        Name = pokemon.Name
                     });
             }
             catch (ArgumentException)

@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace PokemonCore.Core
+﻿namespace PokemonCore.Core
 {
     public class GetPokemonQueryResult
     {
