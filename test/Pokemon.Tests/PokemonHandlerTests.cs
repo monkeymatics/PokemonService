@@ -11,7 +11,7 @@ namespace PokemonService.Tests
 {
     public class PokemonHandlerTests
     {
-        private RequestPokemonHandler _handler;
+        private GetPokemonHandler _handler;
         private Mock<IHttpClient> _clientMock;
         private string shakespeareTranslation = "shakespeare";
         private string yodaTranslation = "yoda";
@@ -127,7 +127,7 @@ namespace PokemonService.Tests
                 }
                 );
 
-            _handler = new RequestPokemonHandler(new PokemonProvider(_clientMock.Object), new TranslationProvider(_clientMock.Object));
+            _handler = new GetPokemonHandler(new PokemonProvider(_clientMock.Object), new TranslationProvider(_clientMock.Object));
         }
 
         [Fact]

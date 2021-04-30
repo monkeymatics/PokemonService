@@ -4,22 +4,22 @@ using System.Threading.Tasks;
 
 namespace PokemonCore.App
 {
-    public class RequestPokemonHandler : IQueryHandler<GetPokemonQuery, PokemonResponse>
+    public class GetPokemonHandler : IQueryHandler<GetPokemonQuery, GetPokemonQueryResult>
     {
         private readonly IPokemonProvider _pokemonProvider;
         private readonly ITranslationProvider _translationProvider;
-        public RequestPokemonHandler(IPokemonProvider pokemonProvider,
+        public GetPokemonHandler(IPokemonProvider pokemonProvider,
             ITranslationProvider translationProvider)
         {
             _pokemonProvider = pokemonProvider ?? throw new ArgumentNullException(nameof(pokemonProvider));
             _translationProvider = translationProvider ?? throw new ArgumentNullException(nameof(translationProvider));
         }
 
-        public async Task<PokemonResponse> HandleAsync(GetPokemonQuery query)
+        public async Task<GetPokemonQueryResult> HandleAsync(GetPokemonQuery query)
         {
             var pokemon = await _pokemonProvider.GetPokemonByNameAsync(query.PokemonName);
 
-            var response = new PokemonResponse
+            var response = new GetPokemonQueryResult
             {
                 Habitat = pokemon.Habitat.Name,
                 Name = pokemon.Name,

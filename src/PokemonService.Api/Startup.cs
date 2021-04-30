@@ -64,8 +64,8 @@ namespace PokemonService.Api
             services.AddMemoryCache();
             services.AddSingleton<IHttpClient, HttpClient>();
             services.AddSingleton<IPokemonProvider, PokemonProvider>();
-            services.AddSingleton<IQuery<PokemonResponse>, GetPokemonQuery>();
-            services.AddSingleton<IQueryHandler<GetPokemonQuery, PokemonResponse>, RequestPokemonHandler>();
+            services.AddSingleton<IQuery<GetPokemonQueryResult>, GetPokemonQuery>();
+            services.AddSingleton<IQueryHandler<GetPokemonQuery, GetPokemonQueryResult>, GetPokemonHandler>();
             services.AddSingleton<ITranslationProvider, TranslationProvider>();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PokemonCore.Core;
+using PokemonService.Api.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -8,9 +9,9 @@ namespace PokemonService.Api.Controllers
     [ApiController]
     public class PokemonController : Controller
     {
-        private readonly IQueryHandler<GetPokemonQuery, PokemonResponse> _requestPokemonHandler;
+        private readonly IQueryHandler<GetPokemonQuery, GetPokemonQueryResult> _requestPokemonHandler;
 
-        public PokemonController(IQueryHandler<GetPokemonQuery, PokemonResponse> requestPokemonHandler)
+        public PokemonController(IQueryHandler<GetPokemonQuery, GetPokemonQueryResult> requestPokemonHandler)
         {
             _requestPokemonHandler = requestPokemonHandler ?? throw new ArgumentException(nameof(requestPokemonHandler));
         }
@@ -29,7 +30,6 @@ namespace PokemonService.Api.Controllers
 
         private async Task<IActionResult> ProcessRequest(string type, bool translate)
         {
-            //https://localhost:44372/pokemon/translated/sdfsdflksdf
             try
             {
                 var pokemon = await _requestPokemonHandler.HandleAsync(
@@ -40,7 +40,14 @@ namespace PokemonService.Api.Controllers
                     }
                     )
                     ;
-                return Ok(pokemon);
+                return Ok(
+                    new GetPokemonResponse 
+                    { 
+                        Description = pokemon.Description, 
+                        Habitat = pokemon.Habitat, 
+                        IsLegendary = pokemon.IsLegendary, 
+                        Name = pokemon.Name 
+                    });
             }
             catch (ArgumentException)
             {
